@@ -254,11 +254,10 @@ mp_data_header({Name, Len, ExtraHeaders}, Boundary) ->
     Disposition = {<<"form-data">>, [{<<"name">>,
                                       <<"\"", Name/binary, "\"">>}]},
     mp_data_header({Name, Len, Disposition, ExtraHeaders}, Boundary);
-mp_data_header({Name, Len, {Disposition, Params}, ExtraHeaders}, Boundary) ->
-    CType = mimerl:filename(Name),
+mp_data_header({_Name, Len, {Disposition, Params}, ExtraHeaders}, Boundary) ->
+    % CType = mimerl:filename(Name),
     ExtraHeaders0 = lists:map(fun ({K, V}) -> {hackney_bstr:to_lower(K), V} end, ExtraHeaders),
-    Headers = mp_filter_header([{<<"content-type">>, CType},
-                                {<<"content-length">>, Len}],
+    Headers = mp_filter_header([{<<"content-length">>, Len}],
                                [{<<"content-disposition">>, Disposition, Params} | ExtraHeaders0]),
     BinHeader = mp_header(Headers, Boundary),
     {BinHeader, Len}.
